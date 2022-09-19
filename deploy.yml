@@ -1,0 +1,7 @@
+---
+
+- hosts: master
+  become: yes
+  roles:
+    - role: prereq
+    - role: apply

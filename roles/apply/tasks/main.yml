@@ -1,0 +1,12 @@
+---
+
+- name: Get kube-proxy config map
+  command: >-
+    kubectl get configmap kube-proxy -n kube-system -o yaml | 
+    sed -e "s/strictARP: false/strictARP: true/" | 
+    kubectl apply -f - -n kube-system
+  when:
+    update_kube_proxy|default(false)
+
+- name: Apply metallb to cluster
+  command: kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/{{ metallb_version }}/config/manifests/metallb-native.yaml

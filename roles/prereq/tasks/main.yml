@@ -1,0 +1,21 @@
+---
+- name: Get kube-proxy config map
+  command: |
+    kubectl get configmap kube-proxy -n kube-system -o yaml
+  register: kube_proxy_cmd
+  failed_when: false
+
+- name: Verify if kube-proxy config needs updating
+  command: >-
+    kubectl get configmap kube-proxy -n kube-system -o yaml | 
+    sed -e "s/strictARP: false/strictARP: true/" | 
+    kubectl diff -f - -n kube-system
+  register: kube_proxy_diff_cmd
+  when: kube_proxy_cmd.rc == 0
+  failed_when: false
+
+- name: Set update_kube_proxy secret to true
+  set_fact:
+    update_kube_proxy: true
+  when:
+    kube_proxy_cmd.rc == 0 and kube_proxy_diff_cmd.rc > 0
