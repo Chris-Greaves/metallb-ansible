@@ -33,11 +33,14 @@ cp -R inventory/sample inventory/my-clusters
 192.168.1.225
 ```
 
-4. Check and possibly update `inventory/my-clusters/group_vars/all.yml` with the correct version of MetalLB you are trying to deploy.
+4. Check and possibly update `inventory/my-clusters/group_vars/all.yml` with the correct version and configuration of MetalLB you are trying to deploy.
 
 ```yaml
 ---
 metallb_version: v0.13.5
+ip_address_pool: 192.168.1.240-192.168.1.250
+address_pool_name: default
+advertisement_name: default
 ```
 
 5. Run the playbook from the root of the repository
