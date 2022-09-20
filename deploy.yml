@@ -5,3 +5,4 @@
   roles:
     - role: prereq
     - role: apply
+    - role: configure

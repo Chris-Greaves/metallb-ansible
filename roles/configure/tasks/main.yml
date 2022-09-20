@@ -1,0 +1,34 @@
+---
+- name: Apply configuration metallb
+  block:
+
+  - name: Create temporary build directory
+    ansible.builtin.tempfile:
+      state: directory
+      suffix: configs
+    register: config_apply_dir
+
+  - name: Create IpAddressPool config
+    register: ip_address_pool
+    template:
+      src: "ip-address-pool.yaml.j2"
+      dest: "{{ config_apply_dir.path }}/ip-address-pool.yaml"
+
+  - name: Create L2Advertisement config
+    register: l2_advertisement
+    template:
+      src: "l2_advertisement.yaml.j2"
+      dest: "{{ config_apply_dir.path }}/l2_advertisement.yaml"
+
+  - name: Apply ip-address-pool.yaml
+    command: kubectl apply -f {{ config_apply_dir.path }}/ip-address-pool.yaml
+
+  - name: Apply l2_advertisement.yaml
+    command: kubectl apply -f {{ config_apply_dir.path }}/l2_advertisement.yaml
+
+  always:
+    - name: Recursively remove config apply directory
+      ansible.builtin.file:
+        path: config_apply_dir.path
+        state: absent
+      when: config_apply_dir is defined
